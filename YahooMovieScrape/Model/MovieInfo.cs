@@ -13,7 +13,10 @@ namespace YahooMovieScrape.Model
 
         public override string ToString()
         {
-            return string.Format("Movie [{0}], [{1}], [{2}], [{3}], [{4}]", ChineseName, EnglishName, ReleaseDateTime,
+            return string.Format("Movie [{0}], [{1}], [{2}], [{3}], [{4}]", 
+                ChineseName, 
+                EnglishName, 
+                ReleaseDateTime,
                 BriefDescription, ImageUri);
         }
     }

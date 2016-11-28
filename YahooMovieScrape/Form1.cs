@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Net;
 using System.Reactive.Linq;
@@ -26,11 +27,12 @@ namespace YahooMovieScrape
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            // parse movie every second, output the result when finished.
             IDisposable iCanBeDisposed = Observable.Interval(TimeSpan.FromSeconds(1))
                 .ObserveOn(SynchronizationContext.Current)
                 .Subscribe(count =>
                 {
-                    ParseMovie(URL_THIS_WEEK/*, YahooMovieParser.Parse*/)
+                    ParseMovie(URL_THIS_WEEK)
                         .Subscribe(movieInfos =>
                         {
                             listBox1.Items.Clear();
@@ -43,7 +45,7 @@ namespace YahooMovieScrape
                             }
                         });
 
-                    ParseMovie(URL_IN_THEATERS/*, YahooMovieParser.Parse*/)
+                    ParseMovie(URL_IN_THEATERS)
                         .Subscribe(movieInfos =>
                         {
                             listBox2.Items.Clear();
@@ -55,19 +57,21 @@ namespace YahooMovieScrape
                                 listBox2.Items.Add(item.ToString());
                             }
                         });
-                });
+                },
+                ex => Trace.WriteLine(ex));
         }
 
-        private IObservable<List<MovieInfo>> ParseMovie(string url/*, Func<string, List<MovieInfo>> act*/)
+        private IObservable<List<MovieInfo>> ParseMovie(string url)
         {
             var wc = new WebClient() { Encoding = Encoding.UTF8 };
 
+            // when received the download completed event, 
+            // parse the data and return to the caller
             IObservable<List<MovieInfo>> observable = Observable
                 .FromEventPattern<DownloadStringCompletedEventArgs>(wc, "DownloadStringCompleted")
                 .Select(item =>
                 {
                     var data = item.EventArgs.Result;
-                    //return act(data);
                     return YahooMovieParser.Parse(data);
                 });
 
