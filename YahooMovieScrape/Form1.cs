@@ -28,7 +28,7 @@ namespace YahooMovieScrape
         private void Form1_Load(object sender, EventArgs e)
         {
             // parse movie every second, output the result when finished.
-            IDisposable iCanBeDisposed = Observable.Interval(TimeSpan.FromSeconds(1))
+            IDisposable iCanBeDisposed = Observable.Interval(TimeSpan.FromSeconds(10))
                 .ObserveOn(SynchronizationContext.Current)
                 .Subscribe(count =>
                 {
